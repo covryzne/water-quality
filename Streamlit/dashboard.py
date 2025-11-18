@@ -63,16 +63,6 @@ st.set_page_config(page_title="Dashboard Kualitas Air", layout="wide")
 def load_and_prepare_data():
     panelA = pd.read_csv(PANELA_CSV)
     panelB = pd.read_csv(PANELB_CSV)
-    for df in [panelA, panelB]:
-        for col in ['createdAt', 'created_at', 'timestamp', 'updatedAt']:
-            if col in df.columns:
-                try:
-                    dt = pd.to_datetime(df[col], errors='coerce', format='mixed')
-                except Exception:
-                    dt = pd.to_datetime(df[col], errors='coerce', utc=True)
-                if hasattr(dt, 'dt') and getattr(dt.dt, 'tz', None) is not None:
-                    dt = dt.dt.tz_localize(None)
-                df[col] = dt.dt.floor('s')
     return panelA, panelB
 
 panelA, panelB = load_and_prepare_data()
@@ -95,28 +85,12 @@ if menu == "Data & Info":
     # Panel A
     with tab1:
         st.subheader("Ringkasan Dataset Panel A")
-
         date_col_A = "createdAt"
-        min_date_A = pd.to_datetime(panelA[date_col_A]).min().date()
-        max_date_A = pd.to_datetime(panelA[date_col_A]).max().date()
-
-        st.write("### Cari berdasarkan Tanggal")
-        date_range_A = st.date_input(
-            f"Filter tanggal",
-            [min_date_A, max_date_A],
-            min_value=min_date_A,
-            max_value=max_date_A
-        )
-
-        start_A = pd.to_datetime(date_range_A[0])
-        end_A   = pd.to_datetime(date_range_A[1]) + pd.Timedelta(days=1) - pd.Timedelta(seconds=1)
-
-        # Datetime sebelum filter
+        # Tidak ada filter tanggal, tampilkan semua data
         panelA[date_col_A] = pd.to_datetime(panelA[date_col_A], errors='coerce')
-        filtered_A = panelA[
-            (panelA[date_col_A] >= start_A) &
-            (panelA[date_col_A] <= end_A)
-        ].copy()
+        # Convert to string to avoid Arrow serialization error
+        panelA[date_col_A] = panelA[date_col_A].astype(str)
+        filtered_A = panelA.copy()
 
         # ===== Metrics =====
         with st.container():
@@ -128,7 +102,14 @@ if menu == "Data & Info":
 
         # ===== Show Table =====
         df_show_A = filtered_A.copy()
-        df_show_A[date_col_A] = df_show_A[date_col_A].astype(str)
+        # Convert all datetime, timedelta, and problematic object columns to string
+        for col in df_show_A.columns:
+            if pd.api.types.is_datetime64_any_dtype(df_show_A[col]) or pd.api.types.is_timedelta64_dtype(df_show_A[col]):
+                df_show_A[col] = df_show_A[col].astype(str)
+            elif df_show_A[col].dtype == object:
+                # If object column contains Timestamp, convert to string
+                if df_show_A[col].apply(lambda x: isinstance(x, pd.Timestamp)).any():
+                    df_show_A[col] = df_show_A[col].astype(str)
         st.dataframe(df_show_A.head(), width='stretch')
 
         # ===== Pie Chart =====
@@ -165,33 +146,16 @@ if menu == "Data & Info":
 
         with st.expander("Statistik Lengkap Panel A"):
             st.dataframe(filtered_A.describe(), width='stretch')
-            
+
     # Panel B
     with tab2:
         st.subheader("Ringkasan Dataset Panel B")
-
         date_col_B = "createdAt"
-        min_date_B = pd.to_datetime(panelB[date_col_B]).min().date()
-        max_date_B = pd.to_datetime(panelB[date_col_B]).max().date()
-
-        st.write("### Cari berdasarkan Tanggal")
-        date_range_B = st.date_input(
-            f"Filter tanggal",
-            [min_date_B, max_date_B],
-            min_value=min_date_B,
-            max_value=max_date_B,
-            key="panelB_date"
-        )
-
-        start_B = pd.to_datetime(date_range_B[0])
-        end_B   = pd.to_datetime(date_range_B[1]) + pd.Timedelta(days=1) - pd.Timedelta(seconds=1)
-
-        # Pastikan kolom tanggal bertipe datetime sebelum filter
+        # Tidak ada filter tanggal, tampilkan semua data
         panelB[date_col_B] = pd.to_datetime(panelB[date_col_B], errors='coerce')
-        filtered_B = panelB[
-            (panelB[date_col_B] >= start_B) &
-            (panelB[date_col_B] <= end_B)
-        ].copy()
+        # Convert to string to avoid Arrow serialization error
+        panelB[date_col_B] = panelB[date_col_B].astype(str)
+        filtered_B = panelB.copy()
 
         # Metrics
         with st.container():
@@ -203,7 +167,13 @@ if menu == "Data & Info":
 
         # Show Table
         df_show_B = filtered_B.copy()
-        df_show_B[date_col_B] = df_show_B[date_col_B].astype(str)
+        # Convert all datetime, timedelta, and problematic object columns to string
+        for col in df_show_B.columns:
+            if pd.api.types.is_datetime64_any_dtype(df_show_B[col]) or pd.api.types.is_timedelta64_dtype(df_show_B[col]):
+                df_show_B[col] = df_show_B[col].astype(str)
+            elif df_show_B[col].dtype == object:
+                if df_show_B[col].apply(lambda x: isinstance(x, pd.Timestamp)).any():
+                    df_show_B[col] = df_show_B[col].astype(str)
         st.dataframe(df_show_B.head(), width='stretch')
 
         # Pie Chart
