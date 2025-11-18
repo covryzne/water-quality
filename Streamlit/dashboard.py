@@ -59,27 +59,6 @@ def get_water_quality_recommendation(sensor_values, label):
     
 st.set_page_config(page_title="Dashboard Kualitas Air", layout="wide")
 
-st.write("Cloud working directory:", os.getcwd())
-st.write("List files:", os.listdir())
-st.write("List parent:", os.listdir(".."))
-st.write("List repo root:", os.listdir(".."))
-st.write("BASE_DIR:", BASE_DIR)
-st.write("DATASET_DIR:", DATASET_DIR)
-st.write("Dataset exists:", os.path.exists(DATASET_DIR))
-st.write("PANELA exists:", os.path.exists(PANELA_CSV))
-
-
-try:
-    modelA = joblib.load(MODEL_PATH_A)
-    scalerA = joblib.load(SCALER_PATH_A)
-    encoderA = joblib.load(ENCODER_PATH_A)
-    st.write("Model A loaded OK")
-except Exception as e:
-    st.write("Model A error:", str(e))
-    st.write(traceback.format_exc())
-
-
-
 # LOAD & PREP DATA SEKALI, CACHE
 @st.cache_data
 def load_and_prepare_data():
@@ -310,21 +289,21 @@ elif menu == "Simulasi Prediksi":
             ph_A = st.number_input("ph (A)", value=7.2, min_value=0.0, max_value=14.0, step=0.01, key="ph_A")
             tds_A = st.number_input("tds (A)", value=350, min_value=0, max_value=2000, step=1, key="tds_A")
 
-        # if st.button("Prediksi Panel A"):
-        #     model = joblib.load(MODEL_PATH_A)
-        #     scaler = joblib.load(SCALER_PATH_A)
-        #     le = joblib.load(ENCODER_PATH_A)
-        #     input_df = pd.DataFrame([[ph, turbidity, tds, flow1]], columns=["ph", "turbidity", "tds", "flow1"])
-        #     input_scaled = scaler.transform(input_df)
-        #     pred = model.predict(input_scaled)
-        #     label = le.inverse_transform(pred)[0]
-        #     st.success(f"Prediksi kualitas air Panel A: **{label}**")
+        if st.button("Prediksi Panel A"):
+            model = joblib.load(MODEL_PATH_A)
+            scaler = joblib.load(SCALER_PATH_A)
+            le = joblib.load(ENCODER_PATH_A)
+            input_df = pd.DataFrame([[ph_A, turbidity_A, tds_A, flow1_A]], columns=["ph", "turbidity", "tds", "flow1"])
+            input_scaled = scaler.transform(input_df)
+            pred = model.predict(input_scaled)
+            label = le.inverse_transform(pred)[0]
+            st.success(f"Prediksi kualitas air Panel A: **{label}**")
 
-        #     # LLM Recommendation
-        #     sensor_values = {"ph": ph, "turbidity": turbidity, "tds": tds, "flow1": flow1}
-        #     with st.spinner("Mengambil rekomendasi dari AI..."):
-        #         llm_result = get_water_quality_recommendation(sensor_values, label)
-        #     st.info(llm_result)
+            # LLM Recommendation
+            sensor_values = {"ph": ph_A, "turbidity": turbidity_A, "tds": tds_A, "flow1": flow1_A}
+            with st.spinner("Mengambil rekomendasi dari AI..."):
+                llm_result = get_water_quality_recommendation(sensor_values, label)
+            st.info(llm_result)
 
     with tabB:
         st.subheader("Prediksi Kualitas Air Panel B")
@@ -337,18 +316,18 @@ elif menu == "Simulasi Prediksi":
             tds_B = st.number_input("tds (B)", value=220, min_value=0, max_value=2000, step=1, key="tds_B")
             flow2_B = st.number_input("flow2 (B)", value=2.7, min_value=0.0, max_value=10.0, step=0.1, key="flow2_B")
 
-        # if st.button("Prediksi Panel B"):
-        #     model = joblib.load(MODEL_PATH_B)
-        #     scaler = joblib.load(SCALER_PATH_B)
-        #     le = joblib.load(ENCODER_PATH_B)
-        #     input_df = pd.DataFrame([[flow1, turbidity, ph, tds, flow2]], columns=["flow1", "turbidity", "ph", "tds", "flow2"])
-        #     input_scaled = scaler.transform(input_df)
-        #     pred = model.predict(input_scaled)
-        #     label = le.inverse_transform(pred)[0]
-        #     st.success(f"Prediksi kualitas air Panel B: **{label}**")
+        if st.button("Prediksi Panel B"):
+            model = joblib.load(MODEL_PATH_B)
+            scaler = joblib.load(SCALER_PATH_B)
+            le = joblib.load(ENCODER_PATH_B)
+            input_df = pd.DataFrame([[flow1_B, turbidity_B, ph_B, tds_B, flow2_B]], columns=["flow1", "turbidity", "ph", "tds", "flow2"])
+            input_scaled = scaler.transform(input_df)
+            pred = model.predict(input_scaled)
+            label = le.inverse_transform(pred)[0]
+            st.success(f"Prediksi kualitas air Panel B: **{label}**")
 
-        #     # LLM Recommendation
-        #     sensor_values = {"ph": ph, "turbidity": turbidity, "tds": tds, "flow1": flow1, "flow2": flow2}
-        #     with st.spinner("Mengambil rekomendasi dari AI..."):
-        #         llm_result = get_water_quality_recommendation(sensor_values, label)
-        #     st.info(llm_result)
+            # LLM Recommendation
+            sensor_values = {"ph": ph_B, "turbidity": turbidity_B, "tds": tds_B, "flow1": flow1_B, "flow2": flow2_B}
+            with st.spinner("Mengambil rekomendasi dari AI..."):
+                llm_result = get_water_quality_recommendation(sensor_values, label)
+            st.info(llm_result)
