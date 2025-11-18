@@ -1,5 +1,4 @@
 import streamlit as st
-from dotenv import load_dotenv
 import google.generativeai as genai
 import requests
 import pandas as pd
@@ -25,10 +24,8 @@ MODEL_PATH_B = os.path.join(MODELS_DIR, 'best_model_rf_panelB.pkl')
 SCALER_PATH_B = os.path.join(MODELS_DIR, 'scaler_panelB.pkl')
 ENCODER_PATH_B = os.path.join(MODELS_DIR, 'label_encoder_panelB.pkl')
 
-load_dotenv()
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
+GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
+genai.configure(api_key=GEMINI_API_KEY)
 
 def get_water_quality_recommendation(sensor_values, label):
     """
