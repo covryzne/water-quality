@@ -10,6 +10,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import os
 from PIL import Image
+import traceback
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATASET_DIR = os.path.join(BASE_DIR, '..', 'Dataset')
@@ -66,6 +67,16 @@ st.write("BASE_DIR:", BASE_DIR)
 st.write("DATASET_DIR:", DATASET_DIR)
 st.write("Dataset exists:", os.path.exists(DATASET_DIR))
 st.write("PANELA exists:", os.path.exists(PANELA_CSV))
+
+try:
+    modelA = joblib.load(MODEL_PATH_A)
+    scalerA = joblib.load(SCALER_PATH_A)
+    encoderA = joblib.load(ENCODER_PATH_A)
+    st.write("Model A loaded OK")
+except Exception as e:
+    st.write("Model A error:", str(e))
+    st.write(traceback.format_exc())
+
 
 
 # LOAD & PREP DATA SEKALI, CACHE
