@@ -8,7 +8,6 @@ import joblib
 import altair as alt
 import seaborn as sns
 import matplotlib.pyplot as plt
-import streamlit as st
 import os
 from PIL import Image
 
@@ -24,8 +23,12 @@ MODEL_PATH_B = os.path.join(MODELS_DIR, 'best_model_rf_panelB.pkl')
 SCALER_PATH_B = os.path.join(MODELS_DIR, 'scaler_panelB.pkl')
 ENCODER_PATH_B = os.path.join(MODELS_DIR, 'label_encoder_panelB.pkl')
 
-GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
-genai.configure(api_key=GEMINI_API_KEY)
+try:
+    GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
+    genai.configure(api_key=GEMINI_API_KEY)
+except Exception as e:
+    st.error(f"Gemini init error: {e}")
+
 
 def get_water_quality_recommendation(sensor_values, label):
     """
@@ -54,6 +57,16 @@ def get_water_quality_recommendation(sensor_values, label):
         return f"[Gemini Error] {e}"
     
 st.set_page_config(page_title="Dashboard Kualitas Air", layout="wide")
+
+st.write("Cloud working directory:", os.getcwd())
+st.write("List files:", os.listdir())
+st.write("List parent:", os.listdir(".."))
+st.write("List repo root:", os.listdir(".."))
+st.write("BASE_DIR:", BASE_DIR)
+st.write("DATASET_DIR:", DATASET_DIR)
+st.write("Dataset exists:", os.path.exists(DATASET_DIR))
+st.write("PANELA exists:", os.path.exists(PANELA_CSV))
+
 
 # LOAD & PREP DATA SEKALI, CACHE
 @st.cache_data
