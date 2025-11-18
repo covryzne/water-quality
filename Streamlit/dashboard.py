@@ -68,6 +68,7 @@ st.write("DATASET_DIR:", DATASET_DIR)
 st.write("Dataset exists:", os.path.exists(DATASET_DIR))
 st.write("PANELA exists:", os.path.exists(PANELA_CSV))
 
+
 try:
     modelA = joblib.load(MODEL_PATH_A)
     scalerA = joblib.load(SCALER_PATH_A)
@@ -303,11 +304,11 @@ elif menu == "Simulasi Prediksi":
         st.subheader("Prediksi Kualitas Air Panel A")
         col1, col2 = st.columns(2)
         with col1:
-            flow1 = st.number_input("flow1 (A)", value=2.5, min_value=0.0, max_value=10.0, step=0.1, key="flow1_A")
-            turbidity = st.number_input("turbidity (A)", value=5.0, min_value=0.0, max_value=100.0, step=0.1, key="turbidity_A")
+            flow1_A = st.number_input("flow1 (A)", value=2.5, min_value=0.0, max_value=10.0, step=0.1, key="flow1_A")
+            turbidity_A = st.number_input("turbidity (A)", value=5.0, min_value=0.0, max_value=100.0, step=0.1, key="turbidity_A")
         with col2:
-            ph = st.number_input("ph (A)", value=7.2, min_value=0.0, max_value=14.0, step=0.01, key="ph_A")
-            tds = st.number_input("tds (A)", value=350, min_value=0, max_value=2000, step=1, key="tds_A")
+            ph_A = st.number_input("ph (A)", value=7.2, min_value=0.0, max_value=14.0, step=0.01, key="ph_A")
+            tds_A = st.number_input("tds (A)", value=350, min_value=0, max_value=2000, step=1, key="tds_A")
 
         # if st.button("Prediksi Panel A"):
         #     model = joblib.load(MODEL_PATH_A)
@@ -329,12 +330,12 @@ elif menu == "Simulasi Prediksi":
         st.subheader("Prediksi Kualitas Air Panel B")
         col1, col2 = st.columns(2)
         with col1:
-            flow1 = st.number_input("flow1 (B)", value=2.7, min_value=0.0, max_value=10.0, step=0.1, key="flow1_B")
-            turbidity = st.number_input("turbidity (B)", value=1.2, min_value=0.0, max_value=100.0, step=0.1, key="turbidity_B")
-            ph = st.number_input("ph (B)", value=7.4, min_value=0.0, max_value=14.0, step=0.01, key="ph_B")
+            flow1_B = st.number_input("flow1 (B)", value=2.7, min_value=0.0, max_value=10.0, step=0.1, key="flow1_B")
+            turbidity_B = st.number_input("turbidity (B)", value=1.2, min_value=0.0, max_value=100.0, step=0.1, key="turbidity_B")
+            ph_B = st.number_input("ph (B)", value=7.4, min_value=0.0, max_value=14.0, step=0.01, key="ph_B")
         with col2:
-            tds = st.number_input("tds (B)", value=220, min_value=0, max_value=2000, step=1, key="tds_B")
-            flow2 = st.number_input("flow2 (B)", value=2.7, min_value=0.0, max_value=10.0, step=0.1, key="flow2_B")
+            tds_B = st.number_input("tds (B)", value=220, min_value=0, max_value=2000, step=1, key="tds_B")
+            flow2_B = st.number_input("flow2 (B)", value=2.7, min_value=0.0, max_value=10.0, step=0.1, key="flow2_B")
 
         # if st.button("Prediksi Panel B"):
         #     model = joblib.load(MODEL_PATH_B)
