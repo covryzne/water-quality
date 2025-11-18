@@ -1,5 +1,6 @@
 import streamlit as st
-from dotenv import load_dotenv
+import dotenv
+dotenv.load_dotenv()
 import google.generativeai as genai
 import requests
 import pandas as pd
